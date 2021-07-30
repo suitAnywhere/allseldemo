@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -39,8 +40,11 @@ public class MainActivity extends AppCompatActivity {
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                Log.d("TAG", "onCheckedChanged: " + position);
                 for (int i = 0; i < datas.size(); i++) {
-                    if (position != -1) {
+                    if (position == -1) {
+                        datas.get(i).setCheck(b);
+                    } else {
                         if (!b) {
                             if (i == position) {
                                 datas.get(i).setCheck(b);
@@ -48,11 +52,14 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             datas.get(i).setCheck(b);
                         }
-                    } else {
-                        datas.get(i).setCheck(b);
                     }
 
                 }
+                String str = "";
+                for (int i = 0; i < datas.size(); i++) {
+                    str = str + datas.get(i).isCheck() + ",";
+                }
+                Log.d("TAG", "onCheckedChanged: " + str);
                 myAdapter.notifyDataSetChanged();
                 position = -1;
             }
@@ -62,9 +69,16 @@ public class MainActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(String event) {
         boolean isAllSel = true;
+        String str = "";
+        for (int i = 0; i < datas.size(); i++) {
+            str = str + datas.get(i).isCheck() + ",";
+        }
+        Log.d("TAG", "onEvent: " + str);
+
         for (int i = 0; i < datas.size(); i++) {
             if (!datas.get(i).isCheck()) {
                 position = i;
+                Log.d("TAG", "onEvent: " + position);
                 isAllSel = false;
                 break;
             }
